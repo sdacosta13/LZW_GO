@@ -13,6 +13,6 @@ func main() {
 	}
 	filename := os.Args[1]
 	codes := ReadFileAs12bit(filename)
-	fmt.Print(codes)
-	LZWDecode()
+	out := LZWDecode(codes)
+	fmt.Print(out)
 }
