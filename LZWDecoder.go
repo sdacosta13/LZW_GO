@@ -9,21 +9,22 @@ func LZWGetInitialDict() map[int]string {
 }
 
 func LZWDecode(codes []uint) string {
-	out := ""
-	previous := ""
 	dict := LZWGetInitialDict()
-	for i := 0; i < len(codes); i++ {
-		symbol := int(codes[i])
-		if val, found := dict[symbol]; found {
-			out += val
-			dict[len(dict)] = previous + string(rune(symbol))
-			previous = val
-		} else {
-			V := previous + string(rune(symbol))
-			dict[len(dict)] = V
-			out += val
-			previous = V
+	w := dict[int(codes[0])]
+	out := w
+	for i, code := range codes {
+		if i == 0 {
+			continue
 		}
+		entry := ""
+		if val, found := dict[int(code)]; found {
+			entry = val
+		} else if int(code) == len(dict) {
+			entry = w + w[0:1]
+		}
+		out += entry
+		dict[len(dict)] = w + entry[0:1]
+		w = entry
 	}
 	return out
 }
