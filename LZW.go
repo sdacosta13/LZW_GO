@@ -8,11 +8,18 @@ import (
 func main() {
 	// Check for Args
 	if !(len(os.Args) > 1) {
-		fmt.Println("A file must be specified")
+		fmt.Println("Usage: go run . [input file path] [output file path]")
 		return
 	}
-	filename := os.Args[1]
-	codes := ReadFileAs12bit(filename)
+	infile := os.Args[1]
+	outfile := os.Args[2]
+
+	// Read as 12bit
+	codes := ReadFileAs12bit(infile)
+
+	// Decode
 	out := LZWDecode(codes)
-	fmt.Print(out)
+
+	// Output
+	WriteStringToFile(outfile, out)
 }

@@ -8,17 +8,18 @@ func check(e error) {
 	}
 }
 
-func ReadFileAs12bit(filename string) []uint {
+// Reads data in the 12bit format specified
+func ReadFileAs12bit(filename string) []int {
 	// Read in bytes and handle errors
 	data, err := os.ReadFile(filename)
 	check(err)
 
+	//account for odd number of codes
 	effectiveLength := len(data)
 	if len(data)%3 != 0 {
-		//account for odd number of codes
 		effectiveLength -= 2
 	}
-	codes := []uint{}
+	codes := []int{}
 	for i := 0; i < effectiveLength; i += 3 {
 		// examine three bytes at a time and extract 2 numbers
 		byteA := data[i+0]
@@ -26,8 +27,8 @@ func ReadFileAs12bit(filename string) []uint {
 		byteC := data[i+2]
 
 		// Bit manipulation to shift the binary to the correct order for addition
-		leftInt := (uint(byteA) << 4) + uint(byteB>>4)
-		rightInt := (uint(byteB<<4) << 4) + uint(byteC)
+		leftInt := (int(byteA) << 4) + int(byteB>>4)
+		rightInt := (int(byteB<<4) << 4) + int(byteC)
 
 		codes = append(codes, leftInt, rightInt)
 	}
@@ -35,8 +36,17 @@ func ReadFileAs12bit(filename string) []uint {
 		// calculates final byte if codes are uneven
 		leftByte := data[len(data)-2]
 		rightByte := data[len(data)-1]
-		finalInt := (uint(leftByte<<4) << 4) + uint(rightByte)
+		finalInt := (int(leftByte<<4) << 4) + int(rightByte)
 		codes = append(codes, finalInt)
 	}
 	return codes
+}
+
+// Creates a file at the path and writes the data
+func WriteStringToFile(path string, data string) {
+	f, e := os.Create(path)
+	check(e)
+	defer f.Close()
+	_, e = f.WriteString(data)
+	check(e)
 }
